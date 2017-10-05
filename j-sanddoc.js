@@ -7,7 +7,7 @@
  * 项目仓库: GitHub.com/LongTengDao/j-sanddoc.git
  */
 
-+function(factory){
+(function(factory){
 
 	if( typeof define==='function' && define.amd ){
 		define(factory);
@@ -158,4 +158,4 @@
 		}
 	}
 
-});
+}));
