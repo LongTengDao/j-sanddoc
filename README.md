@@ -54,8 +54,6 @@
 
 ```javascript
 
-iFrame.attributes.length===7
-&&
 !iFrame.src
 &&
 iFrame.getAttribute('sandbox')
