@@ -1,29 +1,49 @@
 /*!
  * 模块名称: j-sanddoc
  * 所属作者: 龙腾道 (www.LongTengDao.com)
- * 模块版本: 1.0.0
+ * 模块版本: 2.0.0
  * 使用许可: LGPL
  * 问题反馈: GitHub.com/LongTengDao/j-sanddoc/issues
  * 项目仓库: GitHub.com/LongTengDao/j-sanddoc.git
  */
 
-(function(factory){
+'use strict';
 
-	if( typeof define==='function' && define.amd ){
-		define(factory);
-	}
-	else if( typeof module!=='undefined' && module && typeof exports==='object' && exports && module.exports===exports ){
-		module.exports = factory();
+(function(onReady){
+
+	if( document.addEventListener ){
+		document.addEventListener('DOMContentLoaded',onReady);
 	}
 	else{
-		typeof attachEvent==='undefined'? addEventListener('load',factory()): attachEvent('onload',factory());
+		var documentElement = document.documentElement;
+		if( documentElement.doScroll && window==top ){
+			setTimeout(function callee(){
+				try{ documentElement.doScroll(); }catch(e){
+					setTimeout(callee,0);
+					return;
+				}
+				onReady();
+			},0);
+		}
+		else{
+			document.attachEvent('onreadystatechange',function callee(){
+				if( document.readyState==='complete' ){
+					document.detachEvent('onreadystatechange',callee);
+					onReady();
+				}
+			});
+		}
 	}
 
-}(function(){ 'use strict';
+}(function(){
 
 	var sameOrigin = location.href.match(/^https?:\/\/[^/]+/)[0];
 	var safeScheme = /^(?:https?|ftps?|mailto|news|gopher):|^about:blank$/;
-	var iFrames = document.getElementsByTagName('iFrame');
+
+	var sandDocs = collectSandDocs();
+	var index = sandDocs.length;
+	var iFrame;
+	var contentDocument;
 
 	switch( function(){
 		var iFrame = document.createElement('iFrame');
@@ -38,120 +58,105 @@
 		contentDocument.open();
 		contentDocument.write('<script>x=true</script>');
 		contentDocument.close();
-		if( contentWindow.x ){ return 0; }
-		return 1;
+		if( !contentWindow.x ){ return 1; }
 	}() ){
 
 		case 3:
-			return function(){
-				var index = iFrames.length;
-				while( index-- ){
-					var iFrame = iFrames[index];
-					var doc = getDoc(iFrame);
-					if( doc ){
-						var contentDocument = iFrame.contentWindow.document;
-						setAnchor(contentDocument.getElementsByTagName('a'));
-						setAnchor(contentDocument.getElementsByTagName('area'));
-						iFrame.style.display = '';
-						iFrame.style.height = contentDocument.body.offsetHeight+'px';
-					}
-				}
-			};
+			while( index-- ){
+				sandDocs[index].addEventListener('load',onLoad);
+			}
+			break;
 
 		case 2:
-			return function(){
-				var index = iFrames.length;
-				while( index-- ){
-					var iFrame = iFrames[index];
-					var doc = getDoc(iFrame);
-					if( doc ){
-						var contentDocument = iFrame.contentWindow.document;
-						iFrame.addEventListener('load',setHeight);
-						contentDocument.open();
-						contentDocument.write(doc);
-						contentDocument.close();
-						setAnchor(contentDocument.getElementsByTagName('a'));
-						setAnchor(contentDocument.getElementsByTagName('area'));
-					}
-				}
-			};
+			while( index-- ){
+				iFrame = sandDocs[index];
+				iFrame.addEventListener('load',onLoad);
+				contentDocument = iFrame.contentWindow.document;
+				contentDocument.open();
+				contentDocument.write(iFrame.getAttribute('srcdoc'));
+				contentDocument.close();
+			}
+			break;
 
 		case 1:
 			var HTML5_TAGS = 'abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output picture progress section summary template time video'.split(' ');
 			var HTML5_TAGS_LENGTH = HTML5_TAGS.length;
-			var activateTags = function(contentDocument){
+			var activateHTML5Tags = function(contentDocument){
 				var index = HTML5_TAGS_LENGTH;
 				while( index-- ){
 					contentDocument.createElement(HTML5_TAGS[index]);
 				}
 			};
-			return function(){
-				var index = iFrames.length;
-				while( index-- ){
-					var iFrame = iFrames[index];
-					var doc = getDoc(iFrame);
-					if( doc ){
-						iFrame.setAttribute('security','restricted');
-						iFrame.attachEvent('onload',setHeight);
-						var contentDocument = iFrame.contentWindow.document;
-						contentDocument.open();
-						activateTags(contentDocument);
-						contentDocument.write(doc);
-						contentDocument.close();
-					}
-				}
-			};
-
-		case 0:
-			return function(){
-				var index = iFrames.length;
-				while( index-- ){
-					if( getDoc(iFrames[index]) ){
-						return alert('! j-sanddoc');
-					}
-				}
-			};
+			while( index-- ){
+				iFrame = sandDocs[index];
+				iFrame.attachEvent('onload',onLoad);
+				iFrame.setAttribute('security','restricted');
+				contentDocument = iFrame.contentWindow.document;
+				contentDocument.open();
+				activateHTML5Tags(contentDocument);
+				contentDocument.write(iFrame.getAttribute('srcdoc'));
+				contentDocument.close();
+			}
+			break;
 
 	}
 
-	function setHeight(){
-		var style = this.style;
-		style.display = '';
-		style.height = this.contentWindow.document.body.offsetHeight+'px';
+	function collectSandDocs(){
+		var sandDocs = [];
+		var iFrames = document.getElementsByTagName('iFrame');
+		var index = iFrames.length;
+		while( index-- ){
+			var iFrame = iFrames[index];
+			if( isSandDoc(iFrame) ){
+				iFrame.style.display='none';
+				sandDocs.push(iFrame);
+			}
+		}
+		return sandDocs;
 	}
 
-	function getDoc(iFrame){
+	function isSandDoc(iFrame){
+		var sandbox;
 		return(
 			iFrame.attributes.length===7&&
 			!iFrame.src&&
-			iFrame.getAttribute('sandbox')==='allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation'&&
+			(sandbox=iFrame.getAttribute('sandbox'))&&
+			sandbox.split(' ').sort().join(' ')==='allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-top-navigation'&&
 			iFrame.getAttribute('frameborder')==='0'&&
 			iFrame.getAttribute('marginheight')==='0'&&
 			iFrame.getAttribute('marginwidth')==='0'&&
 			iFrame.getAttribute('scrolling')==='no'&&
 			iFrame.style.width==='100%'&&
-			iFrame.style.display==='none'&&
 			iFrame.getAttribute('srcDoc')
 		);
 	}
 
-	function setAnchor(s){
-		var index = s.length;
+	function onLoad(){
+		var contentDocument = this.contentWindow.document;
+		setAnchors(contentDocument.getElementsByTagName('a'));
+		setAnchors(contentDocument.getElementsByTagName('area'));
+		var style = this.style;
+		style.display = '';
+		style.height = contentDocument.body.offsetHeight+'px';
+	}
+
+	function setAnchors(anchors){
+		var index = anchors.length;
 		while( index-- ){
-			var a = s[index];
+			var anchor = anchors[index];
 			var href = a.href;
-			if( a.href ){
+			if( anchor.href ){
 				if( href.indexOf(sameOrigin)===0 ){
-					if( a.target!=='_blank' ){
-						a.target = '_parent';
+					if( anchor.target!=='_blank' ){
+						anchor.target = '_parent';
 					}
 				}
 				else{
 					if( safeScheme.test(href) ){
-						a.target = '_blank';
+						anchor.target = '_blank';
 					}
 					else{
-						a.removeAttribute('href');
+						anchor.removeAttribute('href');
 					}
 				}
 			}
