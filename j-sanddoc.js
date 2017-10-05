@@ -1,7 +1,7 @@
 /*!
  * 模块名称: j-sanddoc
  * 所属作者: 龙腾道 (www.LongTengDao.com)
- * 模块版本: 2.1.0
+ * 模块版本: 2.1.1
  * 使用许可: LGPL
  * 问题反馈: GitHub.com/LongTengDao/j-sanddoc/issues
  * 项目仓库: GitHub.com/LongTengDao/j-sanddoc.git
@@ -52,6 +52,7 @@
 	var index = sandDocs.length;
 	var iFrame;
 	var contentDocument;
+	var style;
 
 	switch( function(){
 		var iFrame = document.createElement('iFrame');
@@ -72,7 +73,9 @@
 		case 3:
 			while( index-- ){
 				iFrame = sandDocs[index];
-				iFrame.style.display = 'none';
+				style = iFrame.style;
+				style.height = '0';
+				style.display = 'none';
 				iFrame.addEventListener('load',initialize);
 			}
 			break;
@@ -80,6 +83,7 @@
 		case 2:
 			while( index-- ){
 				iFrame = sandDocs[index];
+				iFrame.style.height = '0';
 				iFrame.addEventListener('load',justify);
 				contentDocument = iFrame.contentDocument;
 				contentDocument.open();
@@ -100,6 +104,7 @@
 			};
 			while( index-- ){
 				iFrame = sandDocs[index];
+				iFrame.style.height = '0';
 				iFrame.attachEvent('onload',Justify(iFrame));
 				iFrame.setAttribute('security','restricted');
 				contentDocument = iFrame.contentWindow.document;
@@ -159,7 +164,6 @@
 
 	function justify(){
 		var style = this.style;
-		style.height = '0';
 		style.height = this.contentWindow.document.body.offsetHeight+'px';
 	}
 
