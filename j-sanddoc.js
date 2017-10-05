@@ -144,7 +144,7 @@
 		var index = anchors.length;
 		while( index-- ){
 			var anchor = anchors[index];
-			var href = a.href;
+			var href = anchor.href;
 			if( anchor.href ){
 				if( href.indexOf(sameOrigin)===0 ){
 					if( anchor.target!=='_blank' ){
