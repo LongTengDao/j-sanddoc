@@ -1,7 +1,7 @@
 /*!
  * 模块名称: j-sanddoc
  * 所属作者: 龙腾道 (www.LongTengDao.com)
- * 模块版本: 2.0.1
+ * 模块版本: 2.1.0
  * 使用许可: LGPL
  * 问题反馈: GitHub.com/LongTengDao/j-sanddoc/issues
  * 项目仓库: GitHub.com/LongTengDao/j-sanddoc.git
@@ -11,27 +11,35 @@
 
 (function(onReady){
 
-	if( document.addEventListener ){
-		document.addEventListener('DOMContentLoaded',onReady);
+	if( document.readyState==='complete' ){
+		onReady();
+	}
+	else if( document.addEventListener ){
+		document.addEventListener('DOMContentLoaded',onReady,false);
 	}
 	else{
+		var once = true;
+		document.attachEvent('onreadystatechange',function callee(){
+			if( document.readyState==='complete' ){
+				document.detachEvent('onreadystatechange',callee);
+				if( once ){
+					once = false;
+					onReady();
+				}
+			}
+		});
 		var documentElement = document.documentElement;
 		if( documentElement.doScroll && window==top ){
 			setTimeout(function callee(){
-				try{ documentElement.doScroll(); }catch(e){
+				try{ documentElement.doScroll('left'); }catch(e){
 					setTimeout(callee,0);
 					return;
 				}
-				onReady();
-			},0);
-		}
-		else{
-			document.attachEvent('onreadystatechange',function callee(){
-				if( document.readyState==='complete' ){
-					document.detachEvent('onreadystatechange',callee);
+				if( once ){
+					once = false;
 					onReady();
 				}
-			});
+			},0);
 		}
 	}
 
@@ -63,18 +71,21 @@
 
 		case 3:
 			while( index-- ){
-				sandDocs[index].addEventListener('load',onLoad);
+				iFrame = sandDocs[index];
+				iFrame.style.display = 'none';
+				iFrame.addEventListener('load',initialize);
 			}
 			break;
 
 		case 2:
 			while( index-- ){
 				iFrame = sandDocs[index];
-				iFrame.addEventListener('load',onLoad);
-				contentDocument = iFrame.contentWindow.document;
+				iFrame.addEventListener('load',justify);
+				contentDocument = iFrame.contentDocument;
 				contentDocument.open();
 				contentDocument.write(iFrame.getAttribute('srcdoc'));
 				contentDocument.close();
+				setAnchors(contentDocument);
 			}
 			break;
 
@@ -89,13 +100,14 @@
 			};
 			while( index-- ){
 				iFrame = sandDocs[index];
-				iFrame.attachEvent('onload',onLoad);
+				iFrame.attachEvent('onload',Justify(iFrame));
 				iFrame.setAttribute('security','restricted');
 				contentDocument = iFrame.contentWindow.document;
 				contentDocument.open();
 				activateHTML5Tags(contentDocument);
 				contentDocument.write(iFrame.getAttribute('srcdoc'));
 				contentDocument.close();
+				justify.call(iFrame);
 			}
 			break;
 
@@ -108,7 +120,6 @@
 		while( index-- ){
 			var iFrame = iFrames[index];
 			if( isSandDoc(iFrame) ){
-				iFrame.style.display='none';
 				sandDocs.push(iFrame);
 			}
 		}
@@ -118,7 +129,6 @@
 	function isSandDoc(iFrame){
 		var sandbox;
 		return(
-			iFrame.attributes.length===7&&
 			!iFrame.src&&
 			(sandbox=iFrame.getAttribute('sandbox'))&&
 			sandbox.split(' ').sort().join(' ')==='allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-top-navigation'&&
@@ -131,16 +141,34 @@
 		);
 	}
 
-	function onLoad(){
-		var contentDocument = this.contentWindow.document;
-		setAnchors(contentDocument.getElementsByTagName('a'));
-		setAnchors(contentDocument.getElementsByTagName('area'));
-		var style = this.style;
-		style.display = '';
-		style.height = contentDocument.body.offsetHeight+'px';
+	function initialize(){
+		setAnchors(this.contentDocument);
+		this.style.display = '';
+		justify.call(this);
 	}
 
-	function setAnchors(anchors){
+	function Justify(iFrame){
+		var listener = function(){
+			iFrame.detachEvent('onload',listener);
+			listener = null;
+			justify.call(iFrame);
+			iFrame = null;
+		};
+		return listener;
+	}
+
+	function justify(){
+		var style = this.style;
+		style.height = '0';
+		style.height = this.contentWindow.document.body.offsetHeight+'px';
+	}
+
+	function setAnchors(contentDocument){
+		setAnchor(contentDocument.getElementsByTagName('a'));
+		setAnchor(contentDocument.getElementsByTagName('area'));
+	}
+
+	function setAnchor(anchors){
 		var index = anchors.length;
 		while( index-- ){
 			var anchor = anchors[index];
