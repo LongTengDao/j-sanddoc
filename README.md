@@ -60,7 +60,8 @@ iFrame.attributes.length===7
 &&
 iFrame.getAttribute('sandbox')
 &&
-iFrame.getAttribute('sandbox').split(' ').sort().join(' ')==='allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-top-navigation'
+iFrame.getAttribute('sandbox').split(' ').sort().join(' ')===
+'allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-top-navigation'
 &&
 iFrame.getAttribute('frameborder')==='0'
 &&
@@ -85,5 +86,3 @@ iFrame.getAttribute('srcDoc')
 这非常糟糕，糟糕的程度和很多时候我们对于 `<iframe>` 能够自适应高度的希望一样强烈。
 
 因此，从最佳实践的角度，永远建议在用于放置富文本的 `<iframe>` 外面再套一层标签，用于实现对宽度、滚动等的个性化设定，乃至其它你所需要的功能，而不要试图在 `<iframe>` 标签上集成这些设置。
-
-另外一个需要注意的事情是，
