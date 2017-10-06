@@ -1,7 +1,7 @@
 /*!
  * 模块名称: j-sanddoc
  * 所属作者: 龙腾道 (www.LongTengDao.com)
- * 模块版本: 2.2.0
+ * 模块版本: 2.2.1
  * 使用许可: LGPL
  * 问题反馈: GitHub.com/LongTengDao/j-sanddoc/issues
  * 项目仓库: GitHub.com/LongTengDao/j-sanddoc.git
@@ -47,6 +47,7 @@
 
 	var sameOrigin = location.href.match(/^https?:\/\/[^/]+/)[0];
 	var safeScheme = /^(?:https?|ftps?|mailto|news|gopher):|^about:blank$/;
+	var SANDBOX = 'allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-top-navigation';
 
 	var sandDocs = collectSandDocs();
 	var index = sandDocs.length;
@@ -134,10 +135,16 @@
 
 	function isSandDoc(iFrame){
 		var sandbox;
+		var sandboxes;
 		return(
 			!iFrame.src&&
 			(sandbox=iFrame.getAttribute('sandbox'))&&
-			sandbox.split(' ').sort().join(' ')==='allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-top-navigation'&&
+			(sandbox===SANDBOX||
+				(sandboxes=sandbox.split(' '),
+					sandboxes.length===4&&
+					sandboxes.sort().join(' ')===SANDBOX
+				)
+			)&&
 			iFrame.getAttribute('frameborder')==='0'&&
 			iFrame.getAttribute('marginheight')==='0'&&
 			iFrame.getAttribute('marginwidth')==='0'&&
