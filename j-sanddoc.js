@@ -1,7 +1,7 @@
 /*!
  * 模块名称: j-sanddoc
  * 所属作者: 龙腾道 (www.LongTengDao.com)
- * 模块版本: 2.1.1
+ * 模块版本: 2.2.0
  * 使用许可: LGPL
  * 问题反馈: GitHub.com/LongTengDao/j-sanddoc/issues
  * 项目仓库: GitHub.com/LongTengDao/j-sanddoc.git
@@ -76,6 +76,7 @@
 				style = iFrame.style;
 				style.height = '0';
 				style.display = 'none';
+				style.opacity = '0';
 				iFrame.addEventListener('load',initialize);
 			}
 			break;
@@ -148,8 +149,12 @@
 
 	function initialize(){
 		setAnchors(this.contentDocument);
-		this.style.display = '';
+		var style = this.style;
+		style.display = '';
 		justify.call(this);
+		setTimeout(function(){
+			style.opacity = '';
+		},0);
 	}
 
 	function Justify(iFrame){
