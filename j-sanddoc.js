@@ -1,7 +1,7 @@
 /*!
  * 模块名称: j-sanddoc
  * 所属作者: 龙腾道 (www.LongTengDao.com)
- * 模块版本: 2.2.1
+ * 模块版本: 3.0.0
  * 使用许可: LGPL
  * 问题反馈: GitHub.com/LongTengDao/j-sanddoc/issues
  * 项目仓库: GitHub.com/LongTengDao/j-sanddoc.git
@@ -106,15 +106,16 @@
 			};
 			while( index-- ){
 				iFrame = sandDocs[index];
-				iFrame.style.height = '0';
-				iFrame.attachEvent('onload',Justify(iFrame));
+				style = iFrame.style;
+				style.height = '0';
 				iFrame.setAttribute('security','restricted');
 				contentDocument = iFrame.contentWindow.document;
+				iFrame.attachEvent('onload',Justify(iFrame,contentDocument));
 				contentDocument.open();
 				activateHTML5Tags(contentDocument);
 				contentDocument.write(iFrame.getAttribute('srcdoc'));
 				contentDocument.close();
-				justify.call(iFrame);
+				style.height = contentDocument.body.offsetHeight+'px';
 			}
 			break;
 
@@ -138,45 +139,47 @@
 		var sandboxes;
 		return(
 			!iFrame.src&&
-			(sandbox=iFrame.getAttribute('sandbox'))&&
+			!iFrame.name&&
+			!iFrame.seamless&&
+			(sandbox = iFrame.getAttribute('sandbox'))&&
 			(sandbox===SANDBOX||
-				(sandboxes=sandbox.split(' '),
+				(sandboxes = sandbox.split(' '),
 					sandboxes.length===4&&
 					sandboxes.sort().join(' ')===SANDBOX
 				)
 			)&&
-			iFrame.getAttribute('frameborder')==='0'&&
-			iFrame.getAttribute('marginheight')==='0'&&
-			iFrame.getAttribute('marginwidth')==='0'&&
+			iFrame.getAttribute('width')==='100%'&&
 			iFrame.getAttribute('scrolling')==='no'&&
-			iFrame.style.width==='100%'&&
+			iFrame.getAttribute('frameborder')==='0'&&
+			iFrame.getAttribute('marginwidth')==='0'&&
+			iFrame.getAttribute('marginheight')==='0'&&
 			iFrame.getAttribute('srcDoc')
 		);
 	}
 
 	function initialize(){
-		setAnchors(this.contentDocument);
+		var contentDocument = this.contentDocument;
+		setAnchors(contentDocument);
 		var style = this.style;
 		style.display = '';
-		justify.call(this);
+		style.height = contentDocument.body.offsetHeight+'px';
 		setTimeout(function(){
 			style.opacity = '';
 		},0);
 	}
 
-	function Justify(iFrame){
-		var listener = function(){
-			iFrame.detachEvent('onload',listener);
-			listener = null;
-			justify.call(iFrame);
+	function Justify(iFrame,contentDocument){
+		var justify = function(){
+			iFrame.detachEvent('onload',justify);
+			iFrame.style.height = contentDocument.body.offsetHeight+'px';
 			iFrame = null;
+			justify = null;
 		};
-		return listener;
+		return justify;
 	}
 
 	function justify(){
-		var style = this.style;
-		style.height = this.contentWindow.document.body.offsetHeight+'px';
+		this.style.height = this.contentDocument.body.offsetHeight+'px';
 	}
 
 	function setAnchors(contentDocument){
