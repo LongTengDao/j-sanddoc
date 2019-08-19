@@ -1,0 +1,1 @@
+export default 'allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-top-navigation';
