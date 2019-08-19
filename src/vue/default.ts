@@ -1,6 +1,7 @@
 import props from './props';
 
 export default {
+	name: 'j-sanddoc',
 	props: props,
 	inheritAttrs: false,
 	render: function (createElement :any) {

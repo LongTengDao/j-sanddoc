@@ -26,6 +26,7 @@ function setDoc (this :{ $el :HTMLIFrameElement, doc :string }) {
 }
 
 export default {
+	name: 'j-sanddoc',
 	props: props,
 	inheritAttrs: false,
 	render: function (createElement :any) { return createElement('iframe'); },

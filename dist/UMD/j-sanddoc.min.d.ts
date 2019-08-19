@@ -1,6 +1,7 @@
+export as namespace SandDoc;
 export = exports;
 declare const exports :Readonly<{
-	version :string,
+	version :'5.0.0',
 	vue :{
 		readonly name :'j-sanddoc',
 		readonly render :(this :JSanddoc, createElement :any) => any,

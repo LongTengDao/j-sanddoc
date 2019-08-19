@@ -1,4 +1,4 @@
-export const version :string;
+export const version :'5.0.0';
 
 export const vue :{
 	readonly name :'j-sanddoc',

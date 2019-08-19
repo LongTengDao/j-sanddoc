@@ -1,5 +1,3 @@
-import document from '.document';
-
 import SANDBOX from './SANDBOX';
 import render from './render';
 
@@ -37,8 +35,8 @@ function collectSandDocs (document :Document) {
 	return sandDocs;
 }
 
-export default function scan (doc? :Document) {
-	var sandDocs = collectSandDocs(doc || document);
+export default function renderAll (document :Document) {
+	var sandDocs = collectSandDocs(document);
 	var index = sandDocs.length;
 	while ( index-- ) {
 		render(sandDocs[index]);

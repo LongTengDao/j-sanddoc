@@ -1,6 +1,6 @@
 export default {
 	doc: {
 		required: true,
-		validator: function (value :unknown) { return typeof value==='string'; }
+		validator: function (value :any) :value is string { return typeof value==='string'; }
 	}
 };

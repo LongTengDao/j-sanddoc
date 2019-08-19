@@ -1,23 +1,20 @@
 import version from './version?text';
 
 import render from './render';
-import scan from './scan';
-import scanOnReady from './scanOnReady';
+import install from './install';
 import vue from './vue/';
 export {
 	version,
-	render,
-	scan,
-	scanOnReady,
 	vue,
+	render,
+	install,
 };
 
 import Default from '.default?=';
-export default Default(render, {
+export default Default({
 	version: version,
-	render: render,
-	scan: scan,
-	scanOnReady: scanOnReady,
 	vue: vue,
-	_: typeof module!=='undefined' && typeof exports==='object' || typeof define==='function' && define.amd || /*#__PURE__*/ scanOnReady()
+	render: render,
+	install: install,
+	_: typeof module!=='undefined' && typeof exports==='object' || typeof define==='function' && define.amd || /*#__PURE__*/ install()
 });
