@@ -36,19 +36,21 @@
 --------
 
 ```html
-
 <script src="j-sanddoc.js"></script>
 
-<iframe
- sandbox = "allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-same-origin"
- width = "100%"
- frameborder = "0"
- scrolling = "no"
- marginheight = "0"
- marginwidth = "0"
- srcdoc = "富文本"
-></iframe>
+<h1> 文本标题 </h1>
 
+<iframe srcdoc       = "<!DOCTYPE html><html><body> 富文本正文 </body></html>"
+        sandbox      = "allow-popups
+                        allow-popups-to-escape-sandbox
+                        allow-top-navigation
+                        allow-same-origin "
+        width        = "100%"
+        scrolling    = "no"
+        frameborder  = "0"
+        marginwidth  = "0"
+        marginheight = "0"
+></iframe>
 ```
 
 注意事项
@@ -58,30 +60,18 @@
 
 因此，您必须*严格*（当然“严格”不是“变态”，对书写顺序没有要求）按照上例中的形式来设置您的 `<iframe>` 标签的属性。源代码中的具体判定逻辑实现如下：
 
-```javascript
-
-! iFrame.src
-&&
-! iFrame.name
-&&
-! iFrame.seamless
-&&
-iFrame.getAttribute('sandbox')
-&&
-iFrame.getAttribute('sandbox').split(' ').sort().join(' ') === 'allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-top-navigation'
-&&
-iFrame.getAttribute('width') === '100%'
-&&
-iFrame.getAttribute('frameborder') === '0'
-&&
-iFrame.getAttribute('scrolling') === 'no'
-&&
-iFrame.getAttribute('marginwidth') === '0'
-&&
-iFrame.getAttribute('marginheight') === '0'
-&&
-iFrame.getAttribute('srcDoc')
-
+```js
+! iFrame.src &&
+! iFrame.name &&
+! iFrame.seamless &&
+  iFrame.getAttribute('srcdoc') &&
+  iFrame.getAttribute('sandbox') &&
+  iFrame.getAttribute('sandbox').match(/\S+/g).sort().join(' ')==='allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-top-navigation' &&
+  iFrame.getAttribute('width') === '100%' &&
+  iFrame.getAttribute('scrolling') === 'no' &&
+  iFrame.getAttribute('frameborder') === '0' &&
+  iFrame.getAttribute('marginwidth') === '0' &&
+  iFrame.getAttribute('marginheight') === '0'
 ```
 
 您可能注意到，强制 `width` 属性的值为 `100%` 非常像是一条过度的要求，因为很可能需要富文本展示区是别的宽度。
@@ -133,3 +123,55 @@ iFrame.getAttribute('srcDoc')
 -   `<video>`
 
 当然，兼容的意思是支持基本的嵌套关系和在它们上面进行样式设置，并不意味着这些标签中的功能性标签能够呈现它原有的功用。
+
+---
+
+Vue 全局组件用法
+----------------
+
+```html
+<script src="vue.js"></script>
+<script src="j-sanddoc.js"></script>
+
+<script>
+    new Vue({
+        template: `
+            <article>
+                <h1> {{ title }} </h1>
+                <j-sanddoc :srcdoc="content" />
+            </article>
+        `,
+         data: {
+             title: '文本标题',
+             content: '<!DOCTYPE html><html><body> 富文本正文 </body></html>',
+         },
+    });
+</script>
+```
+
+Vue 单文件模块用法
+------------------
+
+```vue
+<template>
+    <article>
+        <h1> {{ title }} </h1>
+        <j-sanddoc :srcdoc="content" />
+    </article>
+</template>
+
+<script>
+    import { vue } from 'j-sanddoc.js';
+    export default {
+        data () {
+            return {
+                title: '文本标题',
+                content: '<!DOCTYPE html><html><body> 富文本正文 </body></html>',
+            };
+        },
+        components: {
+            'j-sanddoc': vue,
+        },
+    };
+</script>
+```

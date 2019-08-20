@@ -1,7 +1,7 @@
 export as namespace SandDoc;
 export = exports;
 declare const exports :Readonly<{
-	version :'6.0.0',
+	version :'6.0.1',
 	
 	vue :{
 		name :'j-sanddoc',

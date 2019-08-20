@@ -1,4 +1,4 @@
-export const version :'6.0.0';
+export const version :'6.0.1';
 
 export const vue :{
 	name :'j-sanddoc',

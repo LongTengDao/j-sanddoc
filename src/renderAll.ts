@@ -1,10 +1,12 @@
 import SANDBOX from './SANDBOX';
 import render from './render';
 
+var Sg = /\S+/g;
+
 function isSandBox (sandbox :string | null) {
 	if ( sandbox ) {
 		if ( sandbox===SANDBOX ) { return true; }
-		var sandboxes = sandbox.split(' ');
+		var sandboxes = sandbox.match(Sg)!;
 		return sandboxes.length===4 && sandboxes.sort().join(' ')===SANDBOX;
 	}
 	return false;
@@ -15,10 +17,10 @@ function isSandDoc (iFrame :HTMLIFrameElement) :boolean {
 		!iFrame.src &&
 		!iFrame.name &&
 		!iFrame.seamless &&
-		iFrame.getAttribute('width')==='100%' &&
-		iFrame.getAttribute('scrolling')==='no' &&
-		iFrame.getAttribute('frameborder')==='0' &&
-		iFrame.getAttribute('marginwidth')==='0' &&
+		iFrame.getAttribute('width'       )==='100%' &&
+		iFrame.getAttribute('scrolling'   )==='no'   &&
+		iFrame.getAttribute('frameborder' )==='0'    &&
+		iFrame.getAttribute('marginwidth' )==='0'    &&
 		iFrame.getAttribute('marginheight')==='0'
 	) : false;
 }

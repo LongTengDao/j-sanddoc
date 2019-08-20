@@ -39,9 +39,16 @@ export default Readonly && /*#__PURE__*/ function () :import('j-vue:')<This> {
 			required: true as true,
 			validator: function (value :any) :value is string { return typeof value==='string'; }
 		}),
-		src: never,
 		sandbox: never,
-		security: never
+		security: never,
+		src: never,
+		name: never,
+		width: never,
+		seamless: never,
+		scrolling: never,
+		frameborder: never,
+		marginwidth: never,
+		marginheight: never
 	});
 	var staticStyle = Readonly({ height: '0!important' });
 	var render;
