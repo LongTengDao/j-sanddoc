@@ -1,27 +1,39 @@
 export const version :string;
 
 export const vue :{
-	readonly name :'j-sanddoc',
-	readonly render :(this :JSanddoc, createElement :any) => any,
-	readonly mounted? :(this :JSanddoc) => void
-	readonly activated? :(this :JSanddoc) => void
-	readonly inheritAttrs :false,
-	readonly props :Readonly<{
-		doc :Readonly<{
+	name :'j-sanddoc',
+	props :Readonly<{
+		srcdoc :Readonly<{
 			required :true,
-			validator :(value :any) => value is string,
-		}>
+			validator (value :any) :value is string,
+		}>,
 	}>,
-	readonly watch? :Readonly<{
-		doc :(this :JSanddoc) => void
-	}>
+	readonly inheritAttrs :false,
+	readonly render :(this :VueInstance, createElement :any) => any,
+	readonly mounted :(this :VueInstance) => void,
+	readonly activated :(this :VueInstance) => void,
+	readonly watch :Readonly<{
+		srcdoc (this :VueInstance) :void,
+	}>,
+	readonly methods :Readonly<{
+		render (this :VueInstance) :void,
+	}>,
+};
+type VueInstance = {
+	render (this :VueInstance) :void
+	srcdoc :string
+	$el :HTMLIFrameElement
 };
 
 export function render (iFrame :HTMLIFrameElement) :void;
 
-export function install (Vue :{ component (id :string, options :any) :any }) :void;
-export function install (document :Document) :void;
 export function install () :void;
+export function install (window :Window) :void;
+export function install (Vue :VueConstructor) :void;
+type VueConstructor = {
+	new (options? :any) :any
+	component (id :string, options? :any) :any
+};
 
 export default exports;
 declare const exports :Readonly<{
@@ -31,8 +43,3 @@ declare const exports :Readonly<{
 	install :typeof install,
 	default :typeof exports,
 }>;
-
-type JSanddoc = {
-	$el :HTMLIFrameElement
-	doc :string
-};

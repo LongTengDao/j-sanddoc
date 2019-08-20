@@ -1,10 +1,12 @@
 import location from '.location';
 
+import noop from './noop';
+
 var sameOrigin = /*#__PURE__*/ function () {
 	var pageOrigin = /^https?:\/\/[^/]+|/.exec(location.href)![0];
 	return pageOrigin
 		? function (href :string) { return href.indexOf(pageOrigin)===0; }
-		: function () {};
+		: noop;
 }();
 
 var withScheme = /^[a-z][a-z0-9\-+.]*:/i;

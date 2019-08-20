@@ -1,32 +1,30 @@
 import SANDBOX from './SANDBOX';
 import render from './render';
 
-function isSandDoc (iFrame :HTMLIFrameElement) {
-	var sandbox;
-	var sandboxes;
-	return (
+function isSandBox (sandbox :string | null) {
+	if ( sandbox ) {
+		if ( sandbox===SANDBOX ) { return true; }
+		var sandboxes = sandbox.split(' ');
+		return sandboxes.length===4 && sandboxes.sort().join(' ')===SANDBOX;
+	}
+	return false;
+}
+
+function isSandDoc (iFrame :HTMLIFrameElement) :boolean {
+	return iFrame.getAttribute('srcdoc') && isSandBox(iFrame.getAttribute('sandbox')) ? (
 		!iFrame.src &&
 		!iFrame.name &&
 		!iFrame.seamless &&
-		( sandbox = iFrame.getAttribute('sandbox') ) &&
-		( sandbox===SANDBOX ||
-			( sandboxes = sandbox.split(' '),
-				sandboxes.length===4 &&
-				sandboxes.sort().join(' ')===SANDBOX
-			)
-		) &&
 		iFrame.getAttribute('width')==='100%' &&
 		iFrame.getAttribute('scrolling')==='no' &&
-		iFrame.getAttribute('frameBorder')==='0' &&
-		iFrame.getAttribute('marginWidth')==='0' &&
-		iFrame.getAttribute('marginHeight')==='0' &&
-		iFrame.getAttribute('srcDoc')
-	);
+		iFrame.getAttribute('frameborder')==='0' &&
+		iFrame.getAttribute('marginwidth')==='0' &&
+		iFrame.getAttribute('marginheight')==='0'
+	) : false;
 }
 
-function collectSandDocs (document :Document) {
+function filterSandDocs (iFrames :HTMLCollectionOf<HTMLIFrameElement>) {
 	var sandDocs = [];
-	var iFrames = document.getElementsByTagName('iframe');
 	var index = iFrames.length;
 	while ( index-- ) {
 		var iFrame = iFrames[index];
@@ -35,8 +33,8 @@ function collectSandDocs (document :Document) {
 	return sandDocs;
 }
 
-export default function renderAll (document :Document) {
-	var sandDocs = collectSandDocs(document);
+export default function renderAll (win :Window) {
+	var sandDocs = filterSandDocs(win.document.getElementsByTagName('iframe'));
 	var index = sandDocs.length;
 	while ( index-- ) {
 		render(sandDocs[index]);

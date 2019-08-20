@@ -1,8 +1,12 @@
 import document from '.document';
 
+import noop from './noop';
+
 export default (
 	'hidden' in /*#__PURE__*/ document.createElement('a')
-		? function activateHTML5Tags () {}
+		
+		? noop
+		
 		: /*#__PURE__*/ function () {
 			// <command /> <keygen /> <source /> <track /> <menu></menu>
 			var HTML5_TAGS = 'abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output picture progress section summary template time video'.split(' ');
@@ -18,4 +22,5 @@ export default (
 			
 			return activateHTML5Tags;
 		}()
+	
 );

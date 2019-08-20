@@ -15,6 +15,8 @@ function filterAnchor (anchors :HTMLCollectionOf<HTMLAnchorElement | HTMLAreaEle
 				break;
 			case 2:
 				anchor.setAttribute('href', './'+href);
+				sameOrigin = true;
+				break;
 			case 3:
 			case 4:
 				sameOrigin = true;

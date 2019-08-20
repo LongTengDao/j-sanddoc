@@ -1,25 +1,31 @@
 import window from '.window';
-import document from '.document';
 
-import vue from './vue/';
+import name from './vue.name';
+import vue from './vue';
 import renderAll from './renderAll';
 import onReady from './onReady';
 
-export default function install (docVue? :Document | { component (name :string, options :any) :any }) {
-	if ( docVue ) {
-		if ( 'documentElement' in docVue ) {
-			onReady(function () { renderAll(docVue); }, docVue);
+export default function install (winVue? :Window | VueConstructor) {
+	if ( winVue==null ) {
+		winVue = ( window as { Vue? :VueConstructor } ).Vue;
+		if ( typeof winVue==='function' ) {
+			winVue.component(name, vue);
 		}
 		else {
-			docVue.component('j-sanddoc', vue);
+			onReady(function () { renderAll(window); }, window);
 		}
 	}
 	else {
-		if ( typeof ( window as any ).Vue==='function' && typeof ( window as any ).Vue.component==='function' ) {
-			( window as any ).Vue.component('j-sanddoc', vue);
+		if ( typeof winVue==='function' ) {
+			winVue.component(name, vue);
 		}
 		else {
-			onReady(function () { renderAll(document); }, document);
+			onReady(function () { renderAll(winVue as Window); }, winVue);
 		}
 	}
+};
+
+type VueConstructor = {
+	new (options? :any) :any
+	component (name :string, options? :any) :any
 };

@@ -1,7 +1,6 @@
 {
 	"compilerOptions": {
 		"target": "ES3",
-		"moduleResolution": "classic",
 		"strict": true,
 		"noImplicitReturns": true,
 		"noUnusedLocals": true

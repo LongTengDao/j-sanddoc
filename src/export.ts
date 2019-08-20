@@ -2,7 +2,7 @@ import version from './version?text';
 
 import render from './render';
 import install from './install';
-import vue from './vue/';
+import vue from './vue';
 export {
 	version,
 	vue,

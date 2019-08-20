@@ -1,32 +1,45 @@
 export as namespace SandDoc;
 export = exports;
 declare const exports :Readonly<{
-	version :'5.0.0',
+	version :'6.0.0',
+	
 	vue :{
-		readonly name :'j-sanddoc',
-		readonly render :(this :JSanddoc, createElement :any) => any,
-		readonly mounted? :(this :JSanddoc) => void
-		readonly activated? :(this :JSanddoc) => void
-		readonly inheritAttrs :false,
-		readonly props :Readonly<{
-			doc :Readonly<{
+		name :'j-sanddoc',
+		props :Readonly<{
+			srcdoc :Readonly<{
 				required :true,
-				validator :(value :any) => value is string,
-			}>
+				validator (value :any) :value is string,
+			}>,
 		}>,
-		readonly watch? :Readonly<{
-			doc :(this :JSanddoc) => void
-		}>
+		readonly inheritAttrs :false,
+		readonly render :(this :VueInstance, createElement :any) => any,
+		readonly mounted :(this :VueInstance) => void,
+		readonly activated :(this :VueInstance) => void,
+		readonly watch :Readonly<{
+			srcdoc :(this :VueInstance) => void,
+		}>,
+		readonly methods :Readonly<{
+			render (this :VueInstance) :void,
+		}>,
 	},
+	
 	render :(iFrame :HTMLIFrameElement) => void,
+	
 	install :{
-		(Vue :{ component (id :string, options :any) :any }) :void
-		(document :Document) :void
 		() :void
+		(window :Window) :void
+		(Vue :VueConstructor) :void
 	},
+	
 	default :typeof exports,
 }>;
-type JSanddoc = {
+
+type VueInstance = {
+	render (this :VueInstance) :void
+	srcdoc :string
 	$el :HTMLIFrameElement
-	doc :string
+};
+type VueConstructor = {
+	new (options? :any) :any
+	component (id :string, options? :any) :any
 };
