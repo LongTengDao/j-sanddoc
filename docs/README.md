@@ -92,7 +92,7 @@
 
 如果您对此有需求，可直接在 `srcdoc` 的值中使用 `<link rel="stylesheet" href="bootstrap.css" />` 等。
 
-由于 `<iframe sandbox>` 的脚本功能处于禁用状态，所以本模块唯一为您代劳的必须由脚本完成的事情是在 IE 9 以下版本的浏览器中，通过使用 `document.create` 函数，激活 HTML 5 的标签可用性。您仍需通过 CSS 自行初始化这些标签的样式。它们包括：
+由于 `<iframe sandbox>` 的脚本功能处于禁用状态，所以本模块唯一为您代劳的必须由脚本完成的事情是在 IE 9 以下版本的浏览器中，通过使用 `document.createElement` 函数，激活 HTML 5 的标签可用性。您仍需通过 CSS 自行初始化这些标签的样式。它们包括：
 
 -   `<abbr>`
 -   `<article>`
